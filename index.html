@@ -135,7 +135,7 @@
 
     <!-- Topic Input -->
     <div class="topic-container">
-        <label for="topic">Topic (Optional):</label>
+        <label for="topic"><b>Topic (Optional)</b>:</label>
         <input type="text" id="topic" placeholder="Enter topic (optional)">
     </div>
 
@@ -163,8 +163,8 @@
 
     <!-- Summary/Analysis Textarea -->
     <div class="summary-container">
-        <label for="summary">Summary/Analysis:</label>
-        <textarea id="summary" placeholder="Enter your summary or analysis here"></textarea>
+        <label for="summary"><b>Summary/Analysis</b>: <br><i>Enter a new line for a new bullet point. No need to type the bullet.</i> </label>
+        <textarea id="summary" placeholder=""></textarea>
     </div>
 
     <button class="generate-button" onclick="generateAlert()">Generate</button>
@@ -281,16 +281,17 @@
         }
 
         // Function to copy the generated output to clipboard
-        function copyToClipboard() {
-            var outputText = document.getElementById("alertOutput").innerText;
-            var textArea = document.createElement("textarea");
-            textArea.value = outputText;
-            document.body.appendChild(textArea);
-            textArea.select();
-            document.execCommand("copy");
-            document.body.removeChild(textArea);
-            alert("Text copied to clipboard!");
-        }
+		function copyToClipboard() {
+    var outputText = document.getElementById("alertOutput").innerText; // Get the text content of the output area
+    if (outputText) {
+        navigator.clipboard.writeText(outputText) // Write the text to clipboard
+            .catch(err => {
+                alert("Failed to copy: " + err); // Error handling
+            });
+    } else {
+        alert("Nothing to copy. Please generate an alert first.");
+    }
+}
 
         // Function to reset the form (clear inputs)
         function resetForm() {
