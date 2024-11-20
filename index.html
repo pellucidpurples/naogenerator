@@ -255,7 +255,7 @@
             // If only one link is present, change the final line to *Link:* followed by the shortened link
             if (linksText) {
                 if (linksText.split('<br>').length <= 2) {  // Only one link
-                    alertContent += "<br>*Link:* " + linksText.split('<br>')[0]; // Take the first link and format
+                    alertContent += "<br>*Link:* " + linksText.split('<br>')[0].split(' ')[1]; // Take the first link and format
                 } else {
                     alertContent += "<br>*Links:*<br>" + linksText;
                 }
