@@ -8,32 +8,36 @@
         body {
             font-family: Arial, sans-serif;
             padding: 20px;
+            font-size: 18px; /* Increase base font size */
         }
         h1 {
             text-align: center;
+            font-size: 26px; /* Increase heading size */
         }
         table {
             width: 100%;
             border-collapse: collapse;
             margin-bottom: 20px;
+            font-size: 18px; /* Increase font size for table content */
         }
         th, td {
             text-align: left;
-            padding: 8px;
+            padding: 10px;
             border: 1px solid #ccc;
         }
         input[type="text"], textarea {
             width: 100%;
-            padding: 8px;
+            padding: 10px;
             border: 1px solid #ccc;
             border-radius: 4px;
             box-sizing: border-box;
+            font-size: 18px; /* Increase font size for input fields */
         }
         button {
             display: block;
             margin: 20px auto;
-            padding: 10px 20px;
-            font-size: 16px;
+            padding: 13px 26px;
+            font-size: 21px; /* Increase button font size */
             cursor: pointer;
             background-color: #4CAF50;
             color: white;
@@ -42,9 +46,9 @@
         }
         .output {
             margin-top: 30px;
-            font-size: 18px;
+            font-size: 23px; /* Increase output font size */
             text-align: left;
-            padding: 10px;
+            padding: 13px;
             background-color: #f4f4f4;
             border: 1px solid #ccc;
             border-radius: 5px;
@@ -54,19 +58,20 @@
             margin-bottom: 20px;
         }
         .summary-container textarea {
-            height: 100px;
-            width: 100%;
+            height: 130px; /* Increase height for textarea */
+            font-size: 18px; /* Increase font size for textarea */
         }
         .topic-container {
             margin-bottom: 20px;
         }
         .topic-container input {
-            height: 40px;
+            height: 50px;
+            font-size: 18px; /* Increase font size for topic input */
         }
         .button-container {
             display: flex;
             justify-content: center;
-            gap: 10px;
+            gap: 15px;
         }
     </style>
 </head>
@@ -134,8 +139,15 @@
             }
         }
 
+        // Function to shorten a URL using the TinyURL service
+        async function shortenUrl(url) {
+            const response = await fetch(`https://tinyurl.com/api-create.php?url=${encodeURIComponent(url)}`);
+            const shortenedUrl = await response.text();
+            return shortenedUrl;
+        }
+
         // Function to generate alerts for all rows in the table
-        function generateAlert() {
+        async function generateAlert() {
             var outlets = document.querySelectorAll(".outlet");
             var headlines = document.querySelectorAll(".headline");
             var links = document.querySelectorAll(".link");
@@ -163,8 +175,10 @@
 
                 // If all fields are filled, create the output
                 if (outlet && headline && link) {
+                    // Shorten the link before displaying
+                    const shortenedLink = await shortenUrl(link);
                     outletsText += "*[" + outlet + "]* " + headline + "<br>";
-                    linksText += "[" + outlet + "] " + link + "<br>";
+                    linksText += "*[" + outlet + "]* " + shortenedLink + "<br>";
                 } else {
                     alertContent += "Please fill in all fields for article " + (i + 1) + ".<br><br>";
                 }
@@ -175,7 +189,7 @@
 
             // Final output formatting
             alertContent += "*Summary/Analysis:*<br>" + summaryText + "<br>" +
-                           "<br>*Links:*<br>" + linksText;
+                           "<br><br>*Links:*<br>" + linksText;
 
             // Display the generated output or a message
             if (alertContent === "") {
