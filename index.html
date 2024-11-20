@@ -23,8 +23,8 @@
             margin-left: 5ch;  /* Shift title to the right by five spaces */
         }
         .reset-button {
-            font-size: 16px;
-            padding: 8px 16px;
+            font-size: 18px;
+            padding: 12px 24px; /* Make the button bigger */
             background-color: #f44336;
             color: white;
             border: none;
@@ -83,6 +83,7 @@
             border: 1px solid #ccc;
             border-radius: 5px;
             word-wrap: break-word;
+            display: none; /* Hide the output box initially */
         }
         .summary-container {
             margin-bottom: 20px;
@@ -111,6 +112,16 @@
             display: flex;
             justify-content: center;
             margin-top: 20px;
+            display: none; /* Hide the copy button initially */
+        }
+        .copy-button-container button {
+            font-size: 16px;
+            padding: 8px 16px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
         }
     </style>
 </head>
@@ -162,9 +173,9 @@
     <div class="output" id="alertOutput"></div>
 
     <!-- Copy Button Container -->
-<div class="copy-button-container">
-    <button onclick="copyToClipboard()" style="font-size: 16px; padding: 6px 12px; background-color: #007BFF; color: white;">Copy</button>
-</div>
+    <div class="copy-button-container">
+        <button onclick="copyToClipboard()">Copy</button>
+    </div>
 
     <script>
         // Function to add a new row of input fields
@@ -256,6 +267,10 @@
             } else {
                 alertOutput.innerHTML = alertContent;
             }
+
+            // Show the output and the Copy button
+            document.querySelector('.output').style.display = 'block';
+            document.querySelector('.copy-button-container').style.display = 'flex';
         }
 
         // Function to format the summary with automatic bullets and empty lines between each point
@@ -284,6 +299,10 @@
             var inputs = document.querySelectorAll(".outlet, .headline, .link");
             inputs.forEach(input => input.value = '');
             document.getElementById("alertOutput").innerHTML = '';
+            
+            // Hide the output and copy button after reset
+            document.querySelector('.output').style.display = 'none';
+            document.querySelector('.copy-button-container').style.display = 'none';
         }
     </script>
 
