@@ -12,27 +12,22 @@
         h1 {
             text-align: center;
         }
-        label {
-            font-weight: bold;
-            margin-top: 10px;
-            display: block;
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
         }
-        .input-container {
-            display: flex;
-            justify-content: space-between;
-            gap: 0; /* Remove gap between input boxes */
-        }
-        .input-container input[type="text"] {
+        th, td {
+            text-align: left;
             padding: 8px;
-            margin-top: 5px;
+            border: 1px solid #ccc;
+        }
+        input[type="text"], textarea {
+            width: 100%;
+            padding: 8px;
             border: 1px solid #ccc;
             border-radius: 4px;
-        }
-        .input-container #outlet {
-            width: 45%; /* Outlet box will take up 45% of the row */
-        }
-        .input-container #headline {
-            width: 50%; /* Headline box will take up 50% of the row */
+            box-sizing: border-box;
         }
         button {
             display: block;
@@ -55,21 +50,59 @@
             border-radius: 5px;
             font-weight: normal; /* Unbold text */
         }
+        .summary-container {
+            margin-bottom: 20px;
+        }
+        .summary-container textarea {
+            height: 100px;
+            width: 100%;
+        }
+        .topic-container {
+            margin-bottom: 20px;
+        }
+        .topic-container input {
+            height: 40px;
+        }
+        .button-container {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
     </style>
 </head>
 <body>
 
     <h1>NAO Alert Generator</h1>
 
-    <div class="input-container">
-        <div>
-            <label for="outlet">Outlet:</label>
-            <input type="text" id="outlet" placeholder="Enter outlet name">
-        </div>
-        <div>
-            <label for="headline">Headline:</label>
-            <input type="text" id="headline" placeholder="Enter headline">
-        </div>
+    <!-- Topic Input -->
+    <div class="topic-container">
+        <label for="topic">Topic (Optional):</label>
+        <input type="text" id="topic" placeholder="Enter topic (optional)">
+    </div>
+
+    <table id="articlesTable">
+        <tr>
+            <th>Outlet</th>
+            <th>Headline</th>
+            <th>Link</th>
+        </tr>
+        <tr>
+            <td><input type="text" class="outlet" placeholder="Enter outlet name"></td>
+            <td><input type="text" class="headline" placeholder="Enter headline"></td>
+            <td><input type="text" class="link" placeholder="Enter link"></td>
+        </tr>
+    </table>
+
+    <!-- Add and Remove Article Buttons -->
+    <div class="button-container">
+        <button onclick="addArticleRow()">Add Article</button>
+        <button onclick="removeArticleRow()">Remove Article</button>
+    </div>
+
+    <!-- Summary/Analysis Textarea -->
+    <div class="summary-container">
+        <label for="summary">Summary/Analysis:</label>
+        <textarea id="summary" placeholder="Enter your summary or analysis here"></textarea>
     </div>
 
     <button onclick="generateAlert()">Generate</button>
@@ -77,16 +110,86 @@
     <div class="output" id="alertOutput"></div>
 
     <script>
-        function generateAlert() {
-            var outlet = document.getElementById("outlet").value;
-            var headline = document.getElementById("headline").value;
-            var alertOutput = document.getElementById("alertOutput");
+        // Function to add a new row of input fields
+        function addArticleRow() {
+            var table = document.getElementById("articlesTable");
+            var newRow = table.insertRow(-1); // Insert new row at the end
 
-            if (outlet && headline) {
-                alertOutput.innerHTML = "*[News Flash]*<br><br>" + "*[" + outlet + "]* " + headline + "<br><br>*Summary/Analysis:*<br><br>";
-            } else {
-                alertOutput.innerHTML = "Please fill in both the outlet and headline.";
+            // Create cells for the new row with input fields
+            var outletCell = newRow.insertCell(0);
+            var headlineCell = newRow.insertCell(1);
+            var linkCell = newRow.insertCell(2);
+
+            // Append new input fields to the cells
+            outletCell.innerHTML = '<input type="text" class="outlet" placeholder="Enter outlet name">';
+            headlineCell.innerHTML = '<input type="text" class="headline" placeholder="Enter headline">';
+            linkCell.innerHTML = '<input type="text" class="link" placeholder="Enter link">';
+        }
+
+        // Function to remove the last row of the table
+        function removeArticleRow() {
+            var table = document.getElementById("articlesTable");
+            if (table.rows.length > 2) {  // Ensure at least one row remains
+                table.deleteRow(table.rows.length - 1);
             }
+        }
+
+        // Function to generate alerts for all rows in the table
+        function generateAlert() {
+            var outlets = document.querySelectorAll(".outlet");
+            var headlines = document.querySelectorAll(".headline");
+            var links = document.querySelectorAll(".link");
+            var summary = document.getElementById("summary").value; // Get the summary text
+            var topic = document.getElementById("topic").value; // Get the topic text (optional)
+            var alertOutput = document.getElementById("alertOutput");
+            var alertContent = "";
+
+            var outletsText = "";
+            var headlinesText = "";
+            var linksText = "";
+
+            // Start output with *[News Flash]* and the topic if provided
+            if (topic) {
+                alertContent += "*[News Flash]* " + topic + "<br><br>";
+            } else {
+                alertContent += "*[News Flash]*<br><br>";
+            }
+
+            // Loop through all rows and generate output for each
+            for (var i = 0; i < outlets.length; i++) {
+                var outlet = outlets[i].value;
+                var headline = headlines[i].value;
+                var link = links[i].value;
+
+                // If all fields are filled, create the output
+                if (outlet && headline && link) {
+                    outletsText += "*[" + outlet + "]* " + headline + "<br>";
+                    linksText += "[" + outlet + "] " + link + "<br>";
+                } else {
+                    alertContent += "Please fill in all fields for article " + (i + 1) + ".<br><br>";
+                }
+            }
+
+            // Final formatting for the summary
+            var summaryText = formatSummary(summary);
+
+            // Final output formatting
+            alertContent += "*Summary/Analysis:*<br>" + summaryText + "<br>" +
+                           "<br>*Links:*<br>" + linksText;
+
+            // Display the generated output or a message
+            if (alertContent === "") {
+                alertOutput.innerHTML = "Please fill in all fields for at least one article.";
+            } else {
+                alertOutput.innerHTML = alertContent;
+            }
+        }
+
+        // Function to format the summary with automatic bullets and empty lines between each point
+        function formatSummary(text) {
+            var lines = text.split('\n');  // Split text into lines based on newline characters
+            var formattedSummary = lines.map(line => "- " + line.trim()).join('<br><br>'); // Add bullet points and empty lines
+            return formattedSummary;
         }
     </script>
 
