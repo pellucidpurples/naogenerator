@@ -1,13 +1,68 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<title> </title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Greeting User</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 20px;
+        }
+        input {
+            padding: 10px;
+            font-size: 16px;
+            margin-right: 10px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        #greeting {
+            margin-top: 20px;
+            font-size: 20px;
+            font-weight: bold;
+        }
+    </style>
 </head>
-
 <body>
-	<header>
-    <h1>NAO WhatsApp Alert Generator</h1>
-    </header>
+
+    <h1>Enter Your Name</h1>
+
+    <!-- Input field for the user to type their name -->
+    <input type="text" id="nameInput" placeholder="Enter your name">
+
+    <!-- Button to trigger the greeting -->
+    <button onclick="greetUser()">Say Hi</button>
+
+    <!-- Placeholder for the greeting -->
+    <div id="greeting"></div>
+
+    <script>
+        // Function to greet the user
+        function greetUser() {
+            // Get the name entered by the user
+            var name = document.getElementById("nameInput").value;
+
+            // Check if a name was entered
+            if (name.trim() !== "") {
+                // Display the greeting
+                document.getElementById("greeting").innerText = "Hi, " + name + "!";
+            } else {
+                // If no name is entered, show a default message
+                document.getElementById("greeting").innerText = "Hi, stranger!";
+            }
+        }
+    </script>
 
 </body>
 </html>
