@@ -3,19 +3,40 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Greeting User</title>
+    <title>NAO Alert Generator</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            text-align: center;
             padding: 20px;
         }
-        input {
-            padding: 10px;
-            font-size: 16px;
-            margin-right: 10px;
+        h1 {
+            text-align: center;
+        }
+        label {
+            font-weight: bold;
+            margin-top: 10px;
+            display: block;
+        }
+        .input-container {
+            display: flex;
+            justify-content: space-between;
+            gap: 0; /* Remove gap between input boxes */
+        }
+        .input-container input[type="text"] {
+            padding: 8px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .input-container #outlet {
+            width: 45%; /* Outlet box will take up 45% of the row */
+        }
+        .input-container #headline {
+            width: 50%; /* Headline box will take up 50% of the row */
         }
         button {
+            display: block;
+            margin: 20px auto;
             padding: 10px 20px;
             font-size: 16px;
             cursor: pointer;
@@ -24,42 +45,47 @@
             border: none;
             border-radius: 5px;
         }
-        button:hover {
-            background-color: #45a049;
-        }
-        #greeting {
-            margin-top: 20px;
-            font-size: 20px;
-            font-weight: bold;
+        .output {
+            margin-top: 30px;
+            font-size: 18px;
+            text-align: left;
+            padding: 10px;
+            background-color: #f4f4f4;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-weight: normal; /* Unbold text */
         }
     </style>
 </head>
 <body>
 
-    <h1>Enter Your Name</h1>
+    <h1>NAO Alert Generator</h1>
 
-    <!-- Input field for the user to type their name -->
-    <input type="text" id="nameInput" placeholder="Enter your name">
+    <div class="input-container">
+        <div>
+            <label for="outlet">Outlet:</label>
+            <input type="text" id="outlet" placeholder="Enter outlet name">
+        </div>
+        <div>
+            <label for="headline">Headline:</label>
+            <input type="text" id="headline" placeholder="Enter headline">
+        </div>
+    </div>
 
-    <!-- Button to trigger the greeting -->
-    <button onclick="greetUser()">Say Hi</button>
+    <button onclick="generateAlert()">Generate</button>
 
-    <!-- Placeholder for the greeting -->
-    <div id="greeting"></div>
+    <div class="output" id="alertOutput"></div>
 
     <script>
-        // Function to greet the user
-        function greetUser() {
-            // Get the name entered by the user
-            var name = document.getElementById("nameInput").value;
+        function generateAlert() {
+            var outlet = document.getElementById("outlet").value;
+            var headline = document.getElementById("headline").value;
+            var alertOutput = document.getElementById("alertOutput");
 
-            // Check if a name was entered
-            if (name.trim() !== "") {
-                // Display the greeting
-                document.getElementById("greeting").innerText = "Hi, " + name + "!";
+            if (outlet && headline) {
+                alertOutput.innerHTML = "*[News Flash]*<br><br>" + "*[" + outlet + "]* " + headline + "<br><br>*Summary/Analysis:*<br><br>";
             } else {
-                // If no name is entered, show a default message
-                document.getElementById("greeting").innerText = "Hi, stranger!";
+                alertOutput.innerHTML = "Please fill in both the outlet and headline.";
             }
         }
     </script>
