@@ -20,11 +20,11 @@
             flex-grow: 1;
             text-align: center;
             font-size: 26px;
-            margin-left: 5ch;  /* Shift title to the right by five spaces */
+            margin-left: 5ch;
         }
         .reset-button {
             font-size: 18px;
-            padding: 12px 24px; /* Make the button bigger */
+            padding: 12px 24px;
             background-color: #f44336;
             color: white;
             border: none;
@@ -43,7 +43,7 @@
             border: 1px solid #ccc;
         }
         input[type="text"], textarea {
-	    	width: 100%;
+            width: 100%;
             padding: 10px;
             border: 1px solid #ccc;
             border-radius: 4px;
@@ -83,7 +83,7 @@
             border: 1px solid #ccc;
             border-radius: 5px;
             word-wrap: break-word;
-            display: none; /* Hide the output box initially */
+            display: none;
         }
         .summary-container {
             margin-bottom: 20px;
@@ -105,15 +105,14 @@
             justify-content: center;
             gap: 15px;
         }
-        /* Empty line after the buttons */
         .empty-space {
-            height: 20px; /* Create space */
+            height: 20px;
         }
         .copy-button-container {
             display: flex;
             justify-content: center;
             margin-top: 20px;
-            display: none; /* Hide the copy button initially */
+            display: none;
         }
         .copy-button-container button {
             font-size: 16px;
@@ -128,13 +127,11 @@
 </head>
 <body>
 
-    <!-- Header with NAO Alert Generator and Reset Button -->
     <div class="header">
         <h1>NAO Alert Generator</h1>
         <button class="reset-button" onclick="resetForm()">Reset</button>
     </div>
 
-    <!-- Topic Input -->
     <div class="topic-container">
         <label for="topic"><b>Topic (Optional)</b>:</label>
         <input type="text" id="topic" placeholder="Enter topic (optional)">
@@ -147,33 +144,28 @@
             <th>Original link (tinyurl will be generated)</th>
         </tr>
         <tr>
-            <td><input type="text" class="outlet" placeholder="Enter outlet name"></td>
+            <td><input type="text" class="outlet" placeholder="Auto-generated" readonly></td>
             <td><input type="text" class="headline" placeholder="Enter headline"></td>
-            <td><input type="text" class="link" placeholder="Enter link"></td>
+            <td><input type="text" class="link" placeholder="Enter link" oninput="detectOutletFromLink(this)"></td>
         </tr>
     </table>
 
-    <!-- Add and Remove Article Buttons -->
     <div class="button-container">
         <button class="small-button" onclick="addArticleRow()">Add Article</button>
         <button class="small-button" onclick="removeArticleRow()">Remove Article</button>
     </div>
 
-    <!-- Empty space after buttons -->
     <div class="empty-space"></div>
 
-    <!-- Summary/Analysis Textarea -->
     <div class="summary-container">
-        <label for="summary"><b>Summary/Analysis</b>: <br><i>Type your point and click "enter" after each point. No need to type the bullet or leave spaces between lines.</i> </label>
+        <label for="summary"><b>Summary/Analysis</b>: <br><i>Type your point and click "enter" after each point. No need to type the bullet or leave spaces between lines.</i></label>
         <textarea id="summary" placeholder=""></textarea>
     </div>
 
     <button class="generate-button" onclick="generateAlert()">Generate</button>
 
-    <!-- Output and Copy Button -->
     <div class="output" id="alertOutput"></div>
 
-    <!-- Copy Button Container -->
     <div class="copy-button-container">
         <button onclick="copyToClipboard()">Copy</button>
     </div>
@@ -182,23 +174,21 @@
         // Function to add a new row of input fields
         function addArticleRow() {
             var table = document.getElementById("articlesTable");
-            var newRow = table.insertRow(-1); // Insert new row at the end
+            var newRow = table.insertRow(-1);
 
-            // Create cells for the new row with input fields
             var outletCell = newRow.insertCell(0);
             var headlineCell = newRow.insertCell(1);
             var linkCell = newRow.insertCell(2);
 
-            // Append new input fields to the cells
-            outletCell.innerHTML = '<input type="text" class="outlet" placeholder="Enter outlet name">';
+            outletCell.innerHTML = '<input type="text" class="outlet" placeholder="Auto-generated" readonly>';
             headlineCell.innerHTML = '<input type="text" class="headline" placeholder="Enter headline">';
-            linkCell.innerHTML = '<input type="text" class="link" placeholder="Enter link">';
+            linkCell.innerHTML = '<input type="text" class="link" placeholder="Enter link" oninput="detectOutletFromLink(this)">';
         }
 
         // Function to remove the last row of the table
         function removeArticleRow() {
             var table = document.getElementById("articlesTable");
-            if (table.rows.length > 2) {  // Ensure at least one row remains
+            if (table.rows.length > 2) {
                 table.deleteRow(table.rows.length - 1);
             }
         }
@@ -210,99 +200,178 @@
             return shortenedUrl;
         }
 
+        // Function to detect the outlet based on the link's domain
+        function detectOutletFromLink(input) {
+            const url = input.value;
+
+            if (!url) {
+                return;
+            }
+
+            const domain = new URL(url).hostname;
+
+            let outlet = "";
+
+            switch(domain) {
+                case "www.straitstimes.com":
+                    outlet = "ST";
+                    break;
+                case "www.channelnewsasia.com":
+                    outlet = "CNA";
+                    break;
+                case "tnp.straitstimes.com":
+                    outlet = "TNP";
+                    break;
+                case "mothership.sg":
+                    outlet = "Mothership";
+                    break;
+                case "www.theonlinecitizen.com":
+                    outlet = "TOC";
+                    break;
+                case "theindependent.sg":
+                    outlet = "TISG";
+                    break;
+                case "jom.media":
+                    outlet = "Jom";
+                    break;
+                case "www.zaobao.com.sg":
+                    outlet = "ZB";
+                    break;
+                case "www.8world.com":
+                    outlet = "8world";
+                    break;
+                case "www.businesstimes.com.sg":
+                    outlet = "BT";
+                    break;
+                case "www.asiaone.com/":
+                    outlet = "AsiaOne";
+                    break;
+                case "sg.news.yahoo.com":
+                    outlet = "Yahoo SG";
+                    break;
+                case "mustsharenews.com":
+                    outlet = "MustShareNews";
+                    break;
+                case "sbr.com.sg":
+                    outlet = "Singapore Business Review";
+                    break;
+                case "english.kyodonews.net":
+                    outlet = "Kyodo News";
+                    break;
+                case "www.asia.nikkei.com/":
+                    outlet = "Nikkei Asia";
+                    break;
+                case "www.scmp.com/":
+                    outlet = "SCMP";
+                    break;
+                case "malaymail.com":
+                    outlet = "Malay Mail";
+                    break;
+                case "www.thestar.com.my":
+                    outlet = "The Star";
+                    break;
+                case "www.reuters.com/":
+                    outlet = "Reuters";
+                    break;
+                case "www.bloomberg.com/":
+                    outlet = "Bloomberg";
+                    break;
+                case "www.theguardian.com/":
+                    outlet = "The Guardian";
+                    break;
+                case "www.nytimes.com/":
+                    outlet = "NYT";
+                    break;
+                default:
+                    outlet = "Unknown"; // Mark as Unknown if domain is not in the list
+            }
+
+            // Set the outlet name in the corresponding row
+            const row = input.closest("tr");
+            row.querySelector(".outlet").value = outlet;
+            // Allow user to edit the outlet field
+            row.querySelector(".outlet").removeAttribute("readonly");
+        }
+
         // Function to generate alerts for all rows in the table
         async function generateAlert() {
             var outlets = document.querySelectorAll(".outlet");
             var headlines = document.querySelectorAll(".headline");
             var links = document.querySelectorAll(".link");
-            var summary = document.getElementById("summary").value; // Get the summary text
-            var topic = document.getElementById("topic").value; // Get the topic text (optional)
+            var summary = document.getElementById("summary").value;
+            var topic = document.getElementById("topic").value;
             var alertOutput = document.getElementById("alertOutput");
             var alertContent = "";
 
             var outletsText = "";
             var linksText = "";
 
-            // Start output with *[News Flash]* and the topic if provided
             if (topic) {
                 alertContent += "*[News Flash]* " + topic + "<br>";
             } else {
                 alertContent += "*[News Flash]*<br>";
             }
 
-            // Loop through all rows and generate output for each
             for (var i = 0; i < outlets.length; i++) {
                 var outlet = outlets[i].value;
                 var headline = headlines[i].value;
                 var link = links[i].value;
 
-                // If all fields are filled, create the output
                 if (outlet && headline && link) {
-                    // Shorten the link before displaying
                     const shortenedLink = await shortenUrl(link);
 
-                    // Correctly format the outlets and headlines
                     outletsText += "*[" + outlet + "]* " + headline + "<br>";
                     linksText += "[" + outlet + "] " + shortenedLink + "<br>";
                 }
             }
 
-            // Final formatting for the summary
             var summaryText = formatSummary(summary);
 
-            // Final output formatting
             alertContent += "<br>" + outletsText + "<br>*Summary/Analysis:*<br>" + summaryText + "<br>";
 
-            // If only one link is present, change the final line to *Link:* followed by the shortened link
             if (linksText) {
-                if (linksText.split('<br>').length <= 2) {  // Only one link
-                    alertContent += "<br>*Link:* " + linksText.split('<br>')[0].split(' ')[1]; // Take the first link and format
+                if (linksText.split('<br>').length <= 2) {
+                    alertContent += "<br>*Link:* " + linksText.split('<br>')[0].split(' ')[1];
                 } else {
                     alertContent += "<br>*Links:*<br>" + linksText;
                 }
             }
 
-            // Display the generated output or a message
             if (outletsText === "") {
                 alertOutput.innerHTML = "Please fill in all fields for at least one article.";
             } else {
                 alertOutput.innerHTML = alertContent;
             }
 
-            // Show the output and the Copy button
             document.querySelector('.output').style.display = 'block';
             document.querySelector('.copy-button-container').style.display = 'flex';
         }
 
-        // Function to format the summary with automatic bullets and empty lines between each point
         function formatSummary(text) {
-            var lines = text.split('\n');  // Split text into lines based on newline characters
-            var formattedSummary = lines.map(line => "- " + line.trim()).join('<br><br>'); // Add bullet points and empty lines
+            var lines = text.split('\n');
+            var formattedSummary = lines.map(line => "- " + line.trim()).join('<br><br>');
             return formattedSummary;
         }
 
-        // Function to copy the generated output to clipboard
-		function copyToClipboard() {
-    var outputText = document.getElementById("alertOutput").innerText; // Get the text content of the output area
-    if (outputText) {
-        navigator.clipboard.writeText(outputText) // Write the text to clipboard
-            .catch(err => {
-                alert("Failed to copy: " + err); // Error handling
-            });
-    } else {
-        alert("Nothing to copy. Please generate an alert first.");
-    }
-}
+        function copyToClipboard() {
+            var outputText = document.getElementById("alertOutput").innerText;
+            if (outputText) {
+                navigator.clipboard.writeText(outputText)
+                    .catch(err => {
+                        alert("Failed to copy: " + err);
+                    });
+            } else {
+                alert("Nothing to copy. Please generate an alert first.");
+            }
+        }
 
-        // Function to reset the form (clear inputs)
         function resetForm() {
             document.getElementById("topic").value = '';
             document.getElementById("summary").value = '';
             var inputs = document.querySelectorAll(".outlet, .headline, .link");
             inputs.forEach(input => input.value = '');
             document.getElementById("alertOutput").innerHTML = '';
-            
-            // Hide the output and copy button after reset
+
             document.querySelector('.output').style.display = 'none';
             document.querySelector('.copy-button-container').style.display = 'none';
         }
