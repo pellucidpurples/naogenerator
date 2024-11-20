@@ -8,17 +8,34 @@
         body {
             font-family: Arial, sans-serif;
             padding: 20px;
-            font-size: 18px; /* Increase base font size */
+            font-size: 18px;
         }
-        h1 {
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+        }
+        .header h1 {
+            flex-grow: 1;
             text-align: center;
-            font-size: 26px; /* Increase heading size */
+            font-size: 26px;
+            margin-left: 5ch;  /* Shift title to the right by five spaces */
+        }
+        .reset-button {
+            font-size: 16px;
+            padding: 8px 16px;
+            background-color: #f44336;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
         }
         table {
             width: 100%;
             border-collapse: collapse;
             margin-bottom: 20px;
-            font-size: 18px; /* Increase font size for table content */
+            font-size: 18px;
         }
         th, td {
             text-align: left;
@@ -31,53 +48,79 @@
             border: 1px solid #ccc;
             border-radius: 4px;
             box-sizing: border-box;
-            font-size: 18px; /* Increase font size for input fields */
+            font-size: 18px;
         }
         button {
+            font-size: 16px;
+            padding: 8px 16px;
+            cursor: pointer;
+            border-radius: 5px;
+            border: none;
+        }
+        .generate-button {
             display: block;
             margin: 20px auto;
             padding: 13px 26px;
-            font-size: 21px; /* Increase button font size */
-            cursor: pointer;
+            font-size: 21px;
+            background-color: #4CAF50;
+            color: white;
+        }
+        .small-button {
+            font-size: 16px;
+            padding: 8px 16px;
             background-color: #4CAF50;
             color: white;
             border: none;
             border-radius: 5px;
+            cursor: pointer;
         }
         .output {
             margin-top: 30px;
-            font-size: 23px; /* Increase output font size */
+            font-size: 23px;
             text-align: left;
             padding: 13px;
             background-color: #f4f4f4;
             border: 1px solid #ccc;
             border-radius: 5px;
-            font-weight: normal; /* Unbold text */
+            word-wrap: break-word;
         }
         .summary-container {
             margin-bottom: 20px;
         }
         .summary-container textarea {
-            height: 130px; /* Increase height for textarea */
-            font-size: 18px; /* Increase font size for textarea */
+            height: 130px;
+            font-size: 18px;
         }
         .topic-container {
             margin-bottom: 20px;
         }
         .topic-container input {
             height: 50px;
-            font-size: 18px; /* Increase font size for topic input */
+            font-size: 18px;
         }
         .button-container {
             display: flex;
             justify-content: center;
             gap: 15px;
         }
+        /* Empty line after the buttons */
+        .empty-space {
+            height: 20px; /* Create space */
+        }
+        .copy-button-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
     </style>
 </head>
 <body>
 
-    <h1>NAO Alert Generator</h1>
+    <!-- Header with NAO Alert Generator and Reset Button -->
+    <div class="header">
+        <h1>NAO Alert Generator</h1>
+        <button class="reset-button" onclick="resetForm()">Reset</button>
+    </div>
 
     <!-- Topic Input -->
     <div class="topic-container">
@@ -100,9 +143,12 @@
 
     <!-- Add and Remove Article Buttons -->
     <div class="button-container">
-        <button onclick="addArticleRow()">Add Article</button>
-        <button onclick="removeArticleRow()">Remove Article</button>
+        <button class="small-button" onclick="addArticleRow()">Add Article</button>
+        <button class="small-button" onclick="removeArticleRow()">Remove Article</button>
     </div>
+
+    <!-- Empty space after buttons -->
+    <div class="empty-space"></div>
 
     <!-- Summary/Analysis Textarea -->
     <div class="summary-container">
@@ -110,9 +156,15 @@
         <textarea id="summary" placeholder="Enter your summary or analysis here"></textarea>
     </div>
 
-    <button onclick="generateAlert()">Generate</button>
+    <button class="generate-button" onclick="generateAlert()">Generate</button>
 
+    <!-- Output and Copy Button -->
     <div class="output" id="alertOutput"></div>
+
+    <!-- Copy Button Container -->
+<div class="copy-button-container">
+    <button onclick="copyToClipboard()" style="font-size: 16px; padding: 6px 12px; background-color: #007BFF; color: white;">Copy</button>
+</div>
 
     <script>
         // Function to add a new row of input fields
@@ -157,14 +209,13 @@
             var alertContent = "";
 
             var outletsText = "";
-            var headlinesText = "";
             var linksText = "";
 
             // Start output with *[News Flash]* and the topic if provided
             if (topic) {
                 alertContent += "*[News Flash]* " + topic + "<br><br>";
             } else {
-                alertContent += "*[News Flash]*<br><br>";
+                alertContent += "*[News Flash]*<br>";
             }
 
             // Loop through all rows and generate output for each
@@ -177,10 +228,10 @@
                 if (outlet && headline && link) {
                     // Shorten the link before displaying
                     const shortenedLink = await shortenUrl(link);
+
+                    // Correctly format the outlets and headlines
                     outletsText += "*[" + outlet + "]* " + headline + "<br>";
-                    linksText += "*[" + outlet + "]* " + shortenedLink + "<br>";
-                } else {
-                    alertContent += "Please fill in all fields for article " + (i + 1) + ".<br><br>";
+                    linksText += "[" + outlet + "] " + shortenedLink + "<br>";
                 }
             }
 
@@ -188,11 +239,19 @@
             var summaryText = formatSummary(summary);
 
             // Final output formatting
-            alertContent += "*Summary/Analysis:*<br>" + summaryText + "<br>" +
-                           "<br><br>*Links:*<br>" + linksText;
+            alertContent += "<br>" + outletsText + "<br>*Summary/Analysis:*<br>" + summaryText + "<br>";
+
+            // If only one link is present, change the final line to *Link:* followed by the shortened link
+            if (linksText) {
+                if (linksText.split('<br>').length <= 2) {  // Only one link
+                    alertContent += "<br>*Link:* " + linksText.split('<br>')[0]; // Take the first link and format
+                } else {
+                    alertContent += "<br>*Links:*<br>" + linksText;
+                }
+            }
 
             // Display the generated output or a message
-            if (alertContent === "") {
+            if (outletsText === "") {
                 alertOutput.innerHTML = "Please fill in all fields for at least one article.";
             } else {
                 alertOutput.innerHTML = alertContent;
@@ -204,6 +263,27 @@
             var lines = text.split('\n');  // Split text into lines based on newline characters
             var formattedSummary = lines.map(line => "- " + line.trim()).join('<br><br>'); // Add bullet points and empty lines
             return formattedSummary;
+        }
+
+        // Function to copy the generated output to clipboard
+        function copyToClipboard() {
+            var outputText = document.getElementById("alertOutput").innerText;
+            var textArea = document.createElement("textarea");
+            textArea.value = outputText;
+            document.body.appendChild(textArea);
+            textArea.select();
+            document.execCommand("copy");
+            document.body.removeChild(textArea);
+            alert("Text copied to clipboard!");
+        }
+
+        // Function to reset the form (clear inputs)
+        function resetForm() {
+            document.getElementById("topic").value = '';
+            document.getElementById("summary").value = '';
+            var inputs = document.querySelectorAll(".outlet, .headline, .link");
+            inputs.forEach(input => input.value = '');
+            document.getElementById("alertOutput").innerHTML = '';
         }
     </script>
 
