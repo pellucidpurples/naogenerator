@@ -5,7 +5,130 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NAO Alert Generator</title>
     <style>
-        /* Add your existing CSS styles here */
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            font-size: 18px;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+        }
+        .header h1 {
+            flex-grow: 1;
+            text-align: center;
+            font-size: 26px;
+            margin-left: 5ch;
+        }
+        .reset-button {
+            font-size: 18px;
+            padding: 12px 24px;
+            background-color: #f44336;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            font-size: 18px;
+        }
+        th, td {
+            text-align: left;
+            padding: 10px;
+            border: 1px solid #ccc;
+        }
+        input[type="text"], textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 18px;
+        }
+        button {
+            font-size: 16px;
+            padding: 8px 16px;
+            cursor: pointer;
+            border-radius: 5px;
+            border: none;
+        }
+        .generate-button {
+            display: block;
+            margin: 20px auto;
+            padding: 13px 26px;
+            font-size: 21px;
+            background-color: #4CAF50;
+            color: white;
+        }
+        .small-button {
+            font-size: 16px;
+            padding: 8px 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .output {
+            margin-top: 30px;
+            font-size: 23px;
+            text-align: left;
+            padding: 13px;
+            background-color: #f4f4f4;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            word-wrap: break-word;
+            display: none;
+        }
+        .summary-container {
+            margin-bottom: 20px;
+        }
+        .summary-container textarea {
+            height: 200px;
+            font-family: Arial, sans-serif;
+            font-size: 18px;
+        }
+        .topic-container {
+            margin-bottom: 20px;
+        }
+        .topic-container input {
+            height: 50px;
+            font-size: 18px;
+        }
+        .button-container {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+        .empty-space {
+            height: 20px;
+        }
+        .copy-button-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+            display: none;
+        }
+        .copy-button-container button {
+            font-size: 16px;
+            padding: 8px 16px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: default;
+        }
+        .outlet:hover {
+            cursor: default;
+        }
+        .outlet::placeholder {
+            font-style: italic;
+        }
     </style>
 </head>
 <body>
@@ -28,7 +151,7 @@
         </tr>
         <tr>
             <td><input type="text" class="outlet" placeholder="Auto-generated" readonly></td>
-            <td><input type="text" class="headline" placeholder="Enter headline" readonly></td>
+            <td><input type="text" class="headline" placeholder="Enter headline"></td>
             <td><input type="text" class="link" placeholder="Enter link" oninput="detectOutletFromLink(this)"></td>
         </tr>
     </table>
@@ -64,7 +187,7 @@
             var linkCell = newRow.insertCell(2);
 
             outletCell.innerHTML = '<input type="text" class="outlet" placeholder="Auto-generated" readonly>';
-            headlineCell.innerHTML = '<input type="text" class="headline" placeholder="Enter headline" readonly>';
+            headlineCell.innerHTML = '<input type="text" class="headline" placeholder="Enter headline">';
             linkCell.innerHTML = '<input type="text" class="link" placeholder="Enter link" oninput="detectOutletFromLink(this)">';
         }
 
@@ -74,6 +197,13 @@
             if (table.rows.length > 2) {
                 table.deleteRow(table.rows.length - 1);
             }
+        }
+
+        // Function to shorten a URL using the TinyURL service
+        async function shortenUrl(url) {
+            const response = await fetch(`https://tinyurl.com/api-create.php?url=${encodeURIComponent(url)}`);
+            const shortenedUrl = await response.text();
+            return shortenedUrl;
         }
 
         // Function to detect the outlet based on the link's domain
@@ -165,25 +295,8 @@
             // Set the outlet name in the corresponding row
             const row = input.closest("tr");
             row.querySelector(".outlet").value = outlet;
-
-            // Call fetchHeadline function to automatically fetch and disable the headline field
-            fetchHeadline(url, row);
-        }
-
-        // Function to fetch the headline based on the URL from the backend
-        async function fetchHeadline(url, row) {
-            try {
-                const response = await fetch(`/api/get-headline?url=${encodeURIComponent(url)}`);
-                const data = await response.json();
-                if (data.title) {
-                    row.querySelector(".headline").value = data.title;
-                    row.querySelector(".headline").setAttribute("readonly", true); // Disable editing the headline
-                } else {
-                    row.querySelector(".headline").value = "Headline not found";
-                }
-            } catch (error) {
-                row.querySelector(".headline").value = "Error fetching headline";
-            }
+            // Allow user to edit the outlet field
+            row.querySelector(".outlet").removeAttribute("readonly");
         }
 
         // Function to generate alerts for all rows in the table
@@ -240,42 +353,36 @@
             document.querySelector('.copy-button-container').style.display = 'flex';
         }
 
-        function formatSummary(summary) {
-            return summary.split("\n").map(item => "* " + item.trim()).join("<br>");
+        function formatSummary(text) {
+            var lines = text.split('\n');
+            var formattedSummary = lines.map(line => "- " + line.trim()).join('<br><br>');
+            return formattedSummary;
         }
 
-        // Function to copy the generated alert text to the clipboard
         function copyToClipboard() {
-            var text = document.getElementById("alertOutput").innerText;
-            navigator.clipboard.writeText(text).then(function() {
-                alert("Copied to clipboard!");
-            }, function(err) {
-                alert("Failed to copy text: ", err);
-            });
-        }
-
-        // Function to shorten a URL using a third-party API
-        async function shortenUrl(url) {
-            try {
-                const response = await fetch(`https://api.shrtco.de/v2/shorten?url=${encodeURIComponent(url)}`);
-                const data = await response.json();
-                return data.result.full_short_link;
-            } catch (error) {
-                return url; // If shortening fails, return the original URL
+            var outputText = document.getElementById("alertOutput").innerText;
+            if (outputText) {
+                navigator.clipboard.writeText(outputText)
+                    .catch(err => {
+                        alert("Failed to copy: " + err);
+                    });
+            } else {
+                alert("Nothing to copy. Please generate an alert first.");
             }
         }
 
-        // Function to reset the form
         function resetForm() {
-            document.getElementById("topic").value = "";
-            document.getElementById("summary").value = "";
-            var table = document.getElementById("articlesTable");
-            while (table.rows.length > 2) {
-                table.deleteRow(1);
-            }
+            document.getElementById("topic").value = '';
+            document.getElementById("summary").value = '';
+            var inputs = document.querySelectorAll(".outlet, .headline, .link");
+            inputs.forEach(input => input.value = '');
+            document.getElementById("alertOutput").innerHTML = '';
+
             document.querySelector('.output').style.display = 'none';
             document.querySelector('.copy-button-container').style.display = 'none';
         }
     </script>
+
 </body>
 </html>
+
