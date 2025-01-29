@@ -209,104 +209,117 @@
             return shortenedUrl;
         }
 
-        // Function to detect the outlet based on the link's domain
-        function detectOutletFromLink(input) {
-            const url = input.value;
+        // Function to detect the outlet and headline based on the link's domain
+async function detectOutletFromLink(input) {
+    const url = input.value;
 
-            if (!url) {
-                return;
-            }
+    if (!url) return;
 
-            const domain = new URL(url).hostname;
+    const domain = new URL(url).hostname;
 
-            let outlet = "";
+    let outlet = "";
 
-            switch(domain) {
-                case "www.straitstimes.com":
-                    outlet = "ST";
-                    break;
-                case "www.channelnewsasia.com":
-                    outlet = "CNA";
-                    break;
-                case "tnp.straitstimes.com":
-                    outlet = "TNP";
-                    break;
-                case "mothership.sg":
-                    outlet = "Mothership";
-                    break;
-                case "www.theonlinecitizen.com":
-                    outlet = "TOC";
-                    break;
-                case "theindependent.sg":
-                    outlet = "TISG";
-                    break;
-                case "jom.media":
-                    outlet = "Jom";
-                    break;
-                case "www.zaobao.com.sg":
-                    outlet = "ZB";
-                    break;
-                case "www.8world.com":
-                    outlet = "8world";
-                    break;
-                case "www.businesstimes.com.sg":
-                    outlet = "BT";
-                    break;
-                case "www.asiaone.com":
-                    outlet = "AsiaOne";
-                    break;
-                case "sg.news.yahoo.com":
-                    outlet = "Yahoo SG";
-                    break;
-                case "mustsharenews.com":
-                    outlet = "MustShareNews";
-                    break;
-                case "sbr.com.sg":
-                    outlet = "Singapore Business Review";
-                    break;
-                case "english.kyodonews.net":
-                    outlet = "Kyodo News";
-                    break;
-                case "www.asia.nikkei.com":
-                    outlet = "Nikkei Asia";
-                    break;
-                case "www.scmp.com":
-                    outlet = "SCMP";
-                    break;
-                case "malaymail.com":
-                    outlet = "Malay Mail";
-                    break;
-                case "www.thestar.com.my":
-                    outlet = "The Star";
-                    break;
-                case "theedgemalaysia.com":
-                    outlet = "The Edge";
-                    break;
-                case "www.reuters.com":
-                    outlet = "Reuters";
-                    break;
-                case "www.bloomberg.com":
-                    outlet = "Bloomberg";
-                    break;
-                case "www.theguardian.com":
-                    outlet = "The Guardian";
-                    break;
-                case "www.nytimes.com":
-                    outlet = "NYT";
-                    break;
-                case "www.cnbc.com":
-                    outlet = "CNBC";
-                    break;
-                default:
-                    outlet = "Unknown"; // Mark as Unknown if domain is not in the list
-            }
+    switch(domain) {
+        case "www.straitstimes.com":
+            outlet = "ST";
+            break;
+        case "www.channelnewsasia.com":
+            outlet = "CNA";
+            break;
+        case "tnp.straitstimes.com":
+            outlet = "TNP";
+            break;
+        case "mothership.sg":
+            outlet = "Mothership";
+            break;
+        case "www.theonlinecitizen.com":
+            outlet = "TOC";
+            break;
+        case "theindependent.sg":
+            outlet = "TISG";
+            break;
+        case "jom.media":
+            outlet = "Jom";
+            break;
+        case "www.zaobao.com.sg":
+            outlet = "ZB";
+            break;
+        case "www.8world.com":
+            outlet = "8world";
+            break;
+        case "www.businesstimes.com.sg":
+            outlet = "BT";
+            break;
+        case "www.asiaone.com":
+            outlet = "AsiaOne";
+            break;
+        case "sg.news.yahoo.com":
+            outlet = "Yahoo SG";
+            break;
+        case "mustsharenews.com":
+            outlet = "MustShareNews";
+            break;
+        case "sbr.com.sg":
+            outlet = "Singapore Business Review";
+            break;
+        case "english.kyodonews.net":
+            outlet = "Kyodo News";
+            break;
+        case "www.asia.nikkei.com":
+            outlet = "Nikkei Asia";
+            break;
+        case "www.scmp.com":
+            outlet = "SCMP";
+            break;
+        case "malaymail.com":
+            outlet = "Malay Mail";
+            break;
+        case "www.thestar.com.my":
+            outlet = "The Star";
+            break;
+        case "theedgemalaysia.com":
+            outlet = "The Edge";
+            break;
+        case "www.reuters.com":
+            outlet = "Reuters";
+            break;
+        case "www.bloomberg.com":
+            outlet = "Bloomberg";
+            break;
+        case "www.theguardian.com":
+            outlet = "The Guardian";
+            break;
+        case "www.nytimes.com":
+            outlet = "NYT";
+            break;
+        case "www.cnbc.com":
+            outlet = "CNBC";
+            break;
+        default:
+            outlet = "Unknown"; // Mark as Unknown if domain is not in the list
+    }
 
-            // Set the outlet name in the corresponding row
-            const row = input.closest("tr");
-            row.querySelector(".outlet").value = outlet;
-            // Allow user to edit the outlet field
-            row.querySelector(".outlet").removeAttribute("readonly");
-        }
+    // Set the outlet name in the corresponding row
+    const row = input.closest("tr");
+    row.querySelector(".outlet").value = outlet;
+
+    // Allow user to edit the outlet field
+    row.querySelector(".outlet").removeAttribute("readonly");
+
+    // Fetch and set the headline
+    const headlineInput = row.querySelector(".headline");
+    headlineInput.value = "Fetching headline...";
+    try {
+        const response = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(url)}`);
+        const data = await response.json();
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(data.contents, "text/html");
+        const title = doc.querySelector("title").innerText;
+        headlineInput.value = title.replace(/ \| .+$/, ""); // Clean the title by removing site name after '|'
+    } catch (error) {
+        headlineInput.value = "Unable to fetch headline";
+    }
+}
 
         // Function to generate alerts for all rows in the table
         async function generateAlert() {
