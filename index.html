@@ -167,7 +167,7 @@
     <div class="empty-space"></div>
 
     <div class="summary-container">
-        <label for="summary"><b>Summary/Analysis</b>: <br><i>Type your point and click "enter" after each point. No need to type the bullet or leave spaces between lines.</i></label>
+        <label for="summary"><b>Summary/Analysis</b>: <br><i>Type each point beginning with the bullet "-". Click "enter" after each point.</i></label>
         <textarea id="summary" placeholder=""></textarea>
     </div>
 
@@ -364,7 +364,7 @@
 
         function formatSummary(text) {
             var lines = text.split('\n');
-            var formattedSummary = lines.map(line => "- " + line.trim()).join('<br><br>');
+            var formattedSummary = lines.map(line => line.trim()).join('<br><br>');
             return formattedSummary;
         }
 
