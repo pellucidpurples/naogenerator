@@ -1,424 +1,130 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NAO Alert Generator</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            padding: 20px;
-            font-size: 18px;
-        }
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            width: 100%;
-        }
-        .header h1 {
-            flex-grow: 1;
-            text-align: center;
-            font-size: 26px;
-            margin-left: 5ch;
-        }
-        .reset-button {
-            font-size: 18px;
-            padding: 12px 24px;
-            background-color: #f44336;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 20px;
-            font-size: 18px;
-        }
-        th, td {
-            text-align: left;
-            padding: 10px;
-            border: 1px solid #ccc;
-        }
-        input[type="text"], textarea {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            box-sizing: border-box;
-            font-size: 18px;
-        }
-        button {
-            font-size: 16px;
-            padding: 8px 16px;
-            cursor: pointer;
-            border-radius: 5px;
-            border: none;
-        }
-        .generate-button {
-            display: block;
-            margin: 20px auto;
-            padding: 13px 26px;
-            font-size: 21px;
-            background-color: #4CAF50;
-            color: white;
-        }
-        .small-button {
-            font-size: 16px;
-            padding: 8px 16px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        .output {
-            margin-top: 30px;
-            font-size: 23px;
-            text-align: left;
-            padding: 13px;
-            background-color: #f4f4f4;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            word-wrap: break-word;
-            display: none;
-        }
-        .summary-container {
-            margin-bottom: 20px;
-        }
-        .summary-container textarea {
-            height: 200px;
-            font-family: Arial, sans-serif;
-            font-size: 18px;
-        }
-        .topic-container {
-            margin-bottom: 20px;
-        }
-        .topic-container input {
-            height: 50px;
-            font-size: 18px;
-        }
-        .button-container {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-        }
-        .empty-space {
-            height: 20px;
-        }
-        .copy-button-container {
-            display: flex;
-            justify-content: center;
-            margin-top: 20px;
-            display: none;
-        }
-        .copy-button-container button {
-            font-size: 16px;
-            padding: 8px 16px;
-            background-color: #007BFF;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: default;
-        }
-        .copy-button-container button {
-        	cursor: pointer;
-        }
-        .outlet:hover {
-            cursor: default;
-        }
-        .outlet::placeholder {
-            font-style: italic;
-        }
-    </style>
-</head>
-<body>
+<script>
+    // Function to detect the outlet and headline based on the link's domain
+    async function detectOutletFromLink(input) {
+        const url = input.value;
 
-    <div class="header">
-        <h1>NAO Alert Generator</h1>
-        <button class="reset-button" onclick="resetForm()">Reset</button>
-    </div>
+        if (!url) return;
 
-    <div class="topic-container">
-        <label for="topic"><b>Topic (Optional)</b>:</label>
-        <input type="text" id="topic" placeholder="Enter topic (optional)">
-    </div>
+        const domain = new URL(url).hostname;
 
-    <table id="articlesTable">
-        <tr>
-            <th>Outlet</th>
-            <th>Headline</th>
-            <th>Original link (tinyurl will be generated)</th>
-        </tr>
-        <tr>
-            <td><input type="text" class="outlet" placeholder="Auto-generated" readonly></td>
-            <td><input type="text" class="headline" placeholder="Enter headline"></td>
-            <td><input type="text" class="link" placeholder="Enter link" oninput="detectOutletFromLink(this)"></td>
-        </tr>
-    </table>
+        let outlet = "";
 
-    <div class="button-container">
-        <button class="small-button" onclick="addArticleRow()">Add Article</button>
-        <button class="small-button" onclick="removeArticleRow()">Remove Article</button>
-    </div>
-
-    <div class="empty-space"></div>
-
-    <div class="summary-container">
-        <label for="summary"><b>Summary/Analysis</b>: <br><i>Type each point on a new line, beginning with the bullet "-".</i></label>
-        <textarea id="summary" placeholder=""></textarea>
-    </div>
-
-    <button class="generate-button" onclick="generateAlert()">Generate</button>
-
-    <div class="output" id="alertOutput"></div>
-
-    <div class="copy-button-container">
-        <button onclick="copyToClipboard()">Copy</button>
-    </div>
-
-    <script>
-        // Function to add a new row of input fields
-        function addArticleRow() {
-            var table = document.getElementById("articlesTable");
-            var newRow = table.insertRow(-1);
-
-            var outletCell = newRow.insertCell(0);
-            var headlineCell = newRow.insertCell(1);
-            var linkCell = newRow.insertCell(2);
-
-            outletCell.innerHTML = '<input type="text" class="outlet" placeholder="Auto-generated" readonly>';
-            headlineCell.innerHTML = '<input type="text" class="headline" placeholder="Enter headline">';
-            linkCell.innerHTML = '<input type="text" class="link" placeholder="Enter link" oninput="detectOutletFromLink(this)">';
+        switch(domain) {
+            case "www.straitstimes.com":
+                outlet = "ST";
+                break;
+            case "www.channelnewsasia.com":
+                outlet = "CNA";
+                break;
+            case "tnp.straitstimes.com":
+                outlet = "TNP";
+                break;
+            case "mothership.sg":
+                outlet = "Mothership";
+                break;
+            case "www.theonlinecitizen.com":
+                outlet = "TOC";
+                break;
+            case "theindependent.sg":
+                outlet = "TISG";
+                break;
+            case "jom.media":
+                outlet = "Jom";
+                break;
+            case "www.businesstimes.com.sg":
+                outlet = "BT";
+                break;
+            case "www.asiaone.com":
+                outlet = "AsiaOne";
+                break;
+            case "sg.news.yahoo.com":
+                outlet = "Yahoo SG";
+                break;
+            case "mustsharenews.com":
+                outlet = "MustShareNews";
+                break;
+            case "www.ricemedia.co":
+                outlet = "Rice Media";
+                break;
+            case "sbr.com.sg":
+                outlet = "Singapore Business Review";
+                break;
+            case "www.zaobao.com.sg":
+                outlet = "ZB";
+                break;
+            case "www.8world.com":
+                outlet = "8world";
+                break;
+            case "www.berita.mediacorp.sg":
+                outlet = "Berita";
+                break;
+            case "english.kyodonews.net":
+                outlet = "Kyodo News";
+                break;
+            case "www.asia.nikkei.com":
+                outlet = "Nikkei Asia";
+                break;
+            case "www.scmp.com":
+                outlet = "SCMP";
+                break;
+            case "malaymail.com":
+                outlet = "Malay Mail";
+                break;
+            case "www.thestar.com.my":
+                outlet = "The Star";
+                break;
+            case "theedgemalaysia.com":
+                outlet = "The Edge";
+                break;
+            case "www.ft.com":
+                outlet = "FT";
+                break;
+            case "thediplomat.com":
+                outlet = "The Diplomat";
+                break;
+            case "www.wsj.com":
+                outlet = "WSJ";
+                break;
+            case "www.reuters.com":
+                outlet = "Reuters";
+                break;
+            case "www.bloomberg.com":
+                outlet = "Bloomberg";
+                break;
+            case "www.theguardian.com":
+                outlet = "The Guardian";
+                break;
+            case "www.nytimes.com":
+                outlet = "NYT";
+                break;
+            case "www.cnbc.com":
+                outlet = "CNBC";
+                break;
+            default:
+                outlet = "Unknown"; // Mark as Unknown if domain is not in the list
         }
 
-        // Function to remove the last row of the table
-        function removeArticleRow() {
-            var table = document.getElementById("articlesTable");
-            if (table.rows.length > 2) {
-                table.deleteRow(table.rows.length - 1);
+        // Set the outlet name in the corresponding row
+        const row = input.closest("tr");
+        row.querySelector(".outlet").value = outlet;
+
+        // Allow user to edit the outlet field
+        row.querySelector(".outlet").removeAttribute("readonly");
+
+        // Check if the headline is already manually entered
+        const headlineInput = row.querySelector(".headline");
+        if (headlineInput.value.trim() === "") { // Only fetch headline if not manually entered
+            headlineInput.value = "Fetching headline...";
+            try {
+                const response = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(url)}`);
+                const data = await response.json();
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(data.contents, "text/html");
+                const title = doc.querySelector("title").innerText;
+                headlineInput.value = title.replace(/ \| .+$/, ""); // Clean the title by removing site name after '|'
+            } catch (error) {
+                headlineInput.value = "Unable to fetch headline";
             }
         }
-
-        // Function to shorten a URL using the TinyURL service
-        async function shortenUrl(url) {
-            const response = await fetch(`https://tinyurl.com/api-create.php?url=${encodeURIComponent(url)}`);
-            const shortenedUrl = await response.text();
-            return shortenedUrl;
-        }
-
-        // Function to detect the outlet and headline based on the link's domain
-async function detectOutletFromLink(input) {
-    const url = input.value;
-
-    if (!url) return;
-
-    const domain = new URL(url).hostname;
-
-    let outlet = "";
-
-    switch(domain) {
-        case "www.straitstimes.com":
-            outlet = "ST";
-            break;
-        case "www.channelnewsasia.com":
-            outlet = "CNA";
-            break;
-        case "tnp.straitstimes.com":
-            outlet = "TNP";
-            break;
-        case "mothership.sg":
-            outlet = "Mothership";
-            break;
-        case "www.theonlinecitizen.com":
-            outlet = "TOC";
-            break;
-        case "theindependent.sg":
-            outlet = "TISG";
-            break;
-        case "jom.media":
-            outlet = "Jom";
-            break;
-        case "www.businesstimes.com.sg":
-            outlet = "BT";
-            break;
-        case "www.asiaone.com":
-            outlet = "AsiaOne";
-            break;
-        case "sg.news.yahoo.com":
-            outlet = "Yahoo SG";
-            break;
-        case "mustsharenews.com":
-            outlet = "MustShareNews";
-            break;
-        case "www.ricemedia.co":
-            outlet = "Rice Media";
-            break;
-        case "sbr.com.sg":
-            outlet = "Singapore Business Review";
-            break;
-        case "www.zaobao.com.sg":
-            outlet = "ZB";
-            break;
-        case "www.8world.com":
-            outlet = "8world";
-            break;
-        case "www.berita.mediacorp.sg":
-            outlet = "Berita";
-            break;
-        case "english.kyodonews.net":
-            outlet = "Kyodo News";
-            break;
-        case "www.asia.nikkei.com":
-            outlet = "Nikkei Asia";
-            break;
-        case "www.scmp.com":
-            outlet = "SCMP";
-            break;
-        case "malaymail.com":
-            outlet = "Malay Mail";
-            break;
-        case "www.thestar.com.my":
-            outlet = "The Star";
-            break;
-        case "theedgemalaysia.com":
-            outlet = "The Edge";
-            break;
-        case "www.ft.com":
-            outlet = "FT";
-            break;
-        case "thediplomat.com":
-            outlet = "The Diplomat";
-            break;
-        case "www.wsj.com":
-            outlet = "WSJ";
-            break;
-        case "www.reuters.com":
-            outlet = "Reuters";
-            break;
-        case "www.bloomberg.com":
-            outlet = "Bloomberg";
-            break;
-        case "www.theguardian.com":
-            outlet = "The Guardian";
-            break;
-        case "www.nytimes.com":
-            outlet = "NYT";
-            break;
-        case "www.cnbc.com":
-            outlet = "CNBC";
-            break;
-        default:
-            outlet = "Unknown"; // Mark as Unknown if domain is not in the list
     }
-
-    // Set the outlet name in the corresponding row
-    const row = input.closest("tr");
-    row.querySelector(".outlet").value = outlet;
-
-    // Allow user to edit the outlet field
-    row.querySelector(".outlet").removeAttribute("readonly");
-
-    // Fetch and set the headline
-    const headlineInput = row.querySelector(".headline");
-    headlineInput.value = "Fetching headline...";
-    try {
-        const response = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(url)}`);
-        const data = await response.json();
-        const parser = new DOMParser();
-        const doc = parser.parseFromString(data.contents, "text/html");
-        const title = doc.querySelector("title").innerText;
-        headlineInput.value = title.replace(/ \| .+$/, ""); // Clean the title by removing site name after '|'
-    } catch (error) {
-        headlineInput.value = "Unable to fetch headline";
-    }
-}
-
-        // Function to generate alerts for all rows in the table
-        async function generateAlert() {
-            var outlets = document.querySelectorAll(".outlet");
-            var headlines = document.querySelectorAll(".headline");
-            var links = document.querySelectorAll(".link");
-            var summary = document.getElementById("summary").value;
-            var topic = document.getElementById("topic").value;
-            var alertOutput = document.getElementById("alertOutput");
-            var alertContent = "";
-
-            var outletsText = "";
-            var linksText = "";
-
-            if (topic) {
-                alertContent += "*[News Flash]* " + topic + "<br>";
-            } else {
-                alertContent += "*[News Flash]*<br>";
-            }
-
-            for (var i = 0; i < outlets.length; i++) {
-                var outlet = outlets[i].value;
-                var headline = headlines[i].value;
-                var link = links[i].value;
-
-                if (outlet && headline && link) {
-                    const shortenedLink = await shortenUrl(link);
-
-                    outletsText += "*[" + outlet + "]* " + headline + "<br>";
-                    linksText += "[" + outlet + "] " + shortenedLink + "<br>";
-                }
-            }
-
-            var summaryText = formatSummary(summary);
-
-            alertContent += "<br>" + outletsText + "<br>*Summary/Analysis:*<br>" + summaryText + "<br>";
-
-            if (linksText) {
-                if (linksText.split('<br>').length <= 2) {
-                    alertContent += "<br>*Link:* " + linksText.split('<br>')[0].split(' ')[1];
-                } else {
-                    alertContent += "<br>*Links:*<br>" + linksText;
-                }
-            }
-
-            if (outletsText === "") {
-                alertOutput.innerHTML = "Please fill in all fields for at least one article.";
-            } else {
-                alertOutput.innerHTML = alertContent;
-            }
-
-            document.querySelector('.output').style.display = 'block';
-            document.querySelector('.copy-button-container').style.display = 'flex';
-        }
-
-        function formatSummary(text) {
-            var lines = text.split('\n');
-            var formattedSummary = lines.map(line => line.trim()).join('<br><br>');
-            return formattedSummary;
-        }
-
-        function copyToClipboard() {
-            var outputText = document.getElementById("alertOutput").innerText;
-            if (outputText) {
-                navigator.clipboard.writeText(outputText)
-                    .catch(err => {
-                        alert("Failed to copy: " + err);
-                    });
-            } else {
-                alert("Nothing to copy. Please generate an alert first.");
-            }
-        }
-
-        function resetForm() {
-            document.getElementById("topic").value = '';
-            document.getElementById("summary").value = '';
-            var inputs = document.querySelectorAll(".outlet, .headline, .link");
-            inputs.forEach(input => input.value = '');
-            document.getElementById("alertOutput").innerHTML = '';
-
-            document.querySelector('.output').style.display = 'none';
-            document.querySelector('.copy-button-container').style.display = 'none';
-        }
-    </script>
-
-</body>
-</html>
+</script>
