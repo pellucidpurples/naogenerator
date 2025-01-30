@@ -209,7 +209,7 @@
             return shortenedUrl;
         }
 
-        // Function to detect the outlet and headline based on the link's domain
+        // Function to detect the outlet based on the link's domain
         async function detectOutletFromLink(input) {
             const url = input.value;
     
@@ -331,7 +331,7 @@
                 const parser = new DOMParser();
                 const doc = parser.parseFromString(data.contents, "text/html");
                 const title = doc.querySelector("title").innerText;
-                headlineInput.value = title.replace(/ \| .+$/, ""); // Clean the title by removing site name after '|'
+                headlineInput.value = title.replace(new RegExp(` - ${outlet}.*$`), "").trim(); // Clean the title by removing site name after '|'
             } catch (error) {
                 headlineInput.value = "Unable to fetch headline";
             }
