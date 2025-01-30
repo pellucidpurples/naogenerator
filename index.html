@@ -5,133 +5,146 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NAO Alert Generator</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            padding: 20px;
-            font-size: 18px;
-        }
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            width: 100%;
-        }
-        .header h1 {
-            flex-grow: 1;
-            text-align: center;
-            font-size: 26px;
-            margin-left: 5ch;
-        }
-        .reset-button {
-            font-size: 18px;
-            padding: 12px 24px;
-            background-color: #f44336;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 20px;
-            font-size: 18px;
-        }
-        th, td {
-            text-align: left;
-            padding: 10px;
-            border: 1px solid #ccc;
-        }
-        input[type="text"], textarea {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            box-sizing: border-box;
-            font-size: 18px;
-        }
-        button {
-            font-size: 16px;
-            padding: 8px 16px;
-            cursor: pointer;
-            border-radius: 5px;
-            border: none;
-        }
-        .generate-button {
-            display: block;
-            margin: 20px auto;
-            padding: 13px 26px;
-            font-size: 21px;
-            background-color: #4CAF50;
-            color: white;
-        }
-        .small-button {
-            font-size: 16px;
-            padding: 8px 16px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        .output {
-            margin-top: 30px;
-            font-size: 23px;
-            text-align: left;
-            padding: 13px;
-            background-color: #f4f4f4;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            word-wrap: break-word;
-            display: none;
-        }
-        .summary-container {
-            margin-bottom: 20px;
-        }
-        .summary-container textarea {
-            height: 200px;
-            font-family: Arial, sans-serif;
-            font-size: 18px;
-        }
-        .topic-container {
-            margin-bottom: 20px;
-        }
-        .topic-container input {
-            height: 50px;
-            font-size: 18px;
-        }
-        .button-container {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-        }
-        .empty-space {
-            height: 20px;
-        }
-        .copy-button-container {
-            display: flex;
-            justify-content: center;
-            margin-top: 20px;
-            display: none;
-        }
-        .copy-button-container button {
-            font-size: 16px;
-            padding: 8px 16px;
-            background-color: #007BFF;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: default;
-        }
-        .copy-button-container button {
-        	cursor: pointer;
-        }
-        .outlet:hover {
-            cursor: default;
-        }
-        .outlet::placeholder {
-            font-style: italic;
-        }
+    body {
+        font-family: Arial, sans-serif;
+        padding: 20px;
+        font-size: 18px;
+    }
+    .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+    }
+    .header h1 {
+        flex-grow: 1;
+        text-align: center;
+        font-size: 26px;
+        margin-left: 5ch;
+    }
+    .reset-button {
+        font-size: 18px;
+        padding: 12px 24px;
+        background-color: #f44336;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 20px;
+        font-size: 18px;
+    }
+    th, td {
+        text-align: left;
+        padding: 10px;
+        border: 1px solid #ccc;
+    }
+    input[type="text"], textarea {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        box-sizing: border-box;
+        font-size: 18px;
+    }
+    button {
+        font-size: 16px;
+        padding: 8px 16px;
+        cursor: pointer;
+        border-radius: 5px;
+        border: none;
+    }
+    .generate-button {
+        display: block;
+        margin: 20px auto;
+        padding: 13px 26px;
+        font-size: 21px;
+        background-color: #4CAF50;
+        color: white;
+    }
+    .small-button {
+        font-size: 16px;
+        padding: 8px 16px;
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+    .output {
+        margin-top: 30px;
+        font-size: 23px;
+        text-align: left;
+        padding: 13px;
+        background-color: #f4f4f4;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        word-wrap: break-word;
+        display: none;
+    }
+    .summary-container {
+        margin-bottom: 20px;
+    }
+    .summary-container textarea {
+        height: 200px;
+        font-family: Arial, sans-serif;
+        font-size: 18px;
+    }
+    .topic-container {
+        margin-bottom: 20px;
+    }
+    .topic-container input {
+        height: 50px;
+        font-size: 18px;
+    }
+    .button-container {
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+    }
+    .empty-space {
+        height: 20px;
+    }
+    .copy-button-container {
+        display: flex;
+        justify-content: center;
+        margin-top: 20px;
+        display: none;
+    }
+    .copy-button-container button {
+        font-size: 16px;
+        padding: 8px 16px;
+        background-color: #007BFF;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: default;
+    }
+    .copy-button-container button {
+        cursor: pointer;
+    }
+    .outlet:hover {
+        cursor: default;
+    }
+    .outlet::placeholder {
+        font-style: italic;
+    }
+
+    /* Add these styles */
+    .outlet {
+        width: 150px; /* Fixed width for the outlet field */
+    }
+
+    .headline {
+        width: calc(100% - 170px - 20px); /* Dynamically adjusts headline width to fill space */
+    }
+
+    .link {
+        width: 100%; /* Keep the link field full width */
+    }
     </style>
 </head>
 <body>
