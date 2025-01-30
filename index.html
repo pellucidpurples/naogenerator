@@ -143,21 +143,21 @@
 
     <div class="topic-container">
         <label for="topic"><b>Topic (Optional)</b>:</label>
-        <input type="text" id="topic" placeholder="Enter topic (optional)">
+        <input type="text" id="topic" placeholder="Enter topic">
     </div>
 
     <table id="articlesTable">
     <tr>
-        <th style="width: 25%;">Outlet</th>
-        <th style="width: 65%;">Headline</th>
-        <th style="width: 100%;">Original link (tinyurl will be generated)</th>
+        <th>Outlet</th>
+        <th>Headline</th>
+        <th>Original link (tinyurl will be generated)</th>
     </tr>
     <tr>
         <td><input type="text" class="outlet" placeholder="Auto-generated" readonly></td>
         <td><input type="text" class="headline" placeholder="Enter headline"></td>
         <td><input type="text" class="link" placeholder="Enter link" oninput="detectOutletFromLink(this)"></td>
     </tr>
-</table>
+    </table>
 
     <div class="button-container">
         <button class="small-button" onclick="addArticleRow()">Add Article</button>
