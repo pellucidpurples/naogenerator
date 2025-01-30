@@ -42,6 +42,15 @@
             padding: 10px;
             border: 1px solid #ccc;
         }
+        .outlet-cell {
+            width: 15%; /* Adjust this value to make the outlet column narrower */
+        }
+        .headline-cell {
+            width: 60%; /* Adjust this value to make the headline column wider */
+        }
+        .link-cell {
+            width: 25%; /* This will keep the link column as it is */
+        }
         input[type="text"], textarea {
             width: 100%;
             padding: 10px;
@@ -148,14 +157,14 @@
 
     <table id="articlesTable">
         <tr>
-            <th>Outlet</th>
-            <th>Headline</th>
-            <th>Original link (tinyurl will be generated)</th>
+            <th class="outlet-cell">Outlet</th>
+            <th class="headline-cell">Headline</th>
+            <th class="link-cell">Original link (tinyurl will be generated)</th>
         </tr>
         <tr>
-            <td><input type="text" class="outlet" placeholder="Auto-generated" readonly></td>
-            <td><input type="text" class="headline" placeholder="Enter headline"></td>
-            <td><input type="text" class="link" placeholder="Enter link" oninput="detectOutletFromLink(this)"></td>
+            <td class="outlet-cell"><input type="text" class="outlet" placeholder="Auto-generated" readonly></td>
+            <td class="headline-cell"><input type="text" class="headline" placeholder="Enter headline"></td>
+            <td class="link-cell"><input type="text" class="link" placeholder="Enter link" oninput="detectOutletFromLink(this)"></td>
         </tr>
     </table>
 
@@ -188,6 +197,10 @@
             var outletCell = newRow.insertCell(0);
             var headlineCell = newRow.insertCell(1);
             var linkCell = newRow.insertCell(2);
+
+            outletCell.className = "outlet-cell";
+            headlineCell.className = "headline-cell";
+            linkCell.className = "link-cell";
 
             outletCell.innerHTML = '<input type="text" class="outlet" placeholder="Auto-generated" readonly>';
             headlineCell.innerHTML = '<input type="text" class="headline" placeholder="Enter headline">';
