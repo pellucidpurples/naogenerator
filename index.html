@@ -141,6 +141,9 @@
         .outlet::placeholder {
             font-style: italic;
         }
+        .headline::placeholder {
+            font-style: italic;
+        }
     </style>
 </head>
 <body>
@@ -163,7 +166,7 @@
         </tr>
         <tr>
             <td class="outlet-cell"><input type="text" class="outlet" placeholder="Auto-generated" readonly></td>
-            <td class="headline-cell"><input type="text" class="headline" placeholder="Enter headline"></td>
+            <td class="headline-cell"><input type="text" class="headline" placeholder="Auto-generated"></td>
             <td class="link-cell"><input type="text" class="link" placeholder="Enter link" oninput="detectOutletFromLink(this)"></td>
         </tr>
     </table>
@@ -203,7 +206,7 @@
             linkCell.className = "link-cell";
 
             outletCell.innerHTML = '<input type="text" class="outlet" placeholder="Auto-generated" readonly>';
-            headlineCell.innerHTML = '<input type="text" class="headline" placeholder="Enter headline">';
+            headlineCell.innerHTML = '<input type="text" class="headline" placeholder="Auto-generated">';
             linkCell.innerHTML = '<input type="text" class="link" placeholder="Enter link" oninput="detectOutletFromLink(this)">';
         }
 
